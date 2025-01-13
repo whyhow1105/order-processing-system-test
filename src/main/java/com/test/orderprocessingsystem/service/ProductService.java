@@ -1,30 +1,32 @@
 package com.test.orderprocessingsystem.service;
 
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
-import com.test.orderprocessingsystem.entity.Product;
-import com.test.orderprocessingsystem.repository.ProductRepository;
+import com.test.orderprocessingsystem.model.Product;
+//import com.test.orderprocessingsystem.repository.ProductRepository;
 import com.test.orderprocessingsystem.usecase.ProductUseCase;
 
 @Service
 public class ProductService implements ProductUseCase {
 	
-	private final ProductRepository productRepository;
+	private final CacheManager cacheManager;
 	
-	public ProductService(ProductRepository productRepository) {
-		this.productRepository = productRepository;
+	private final String cacheName = "products";
+	
+	public ProductService(CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
 	}
 
 	@Override
-//	@CachePut(value = "products", key = "#product.type")
 	public void addProduct(Product product) {
-		
-		Product existProduct = this.productRepository.getByType(product.getType());
+		Cache cache = this.cacheManager.getCache(cacheName);
+		Product existProduct = this.getByType(product.getType());
 		
 		if (existProduct == null) {
-			this.productRepository.save(product);
+			product.saveRecord();
+			cache.put(product.getType(), product);
 		} else {
 			existProduct.setDisallowCurrency(product.getDisallowCurrency());
 			existProduct.setDisallowSpecificCurrency(product.isDisallowSpecificCurrency());
@@ -32,16 +34,21 @@ public class ProductService implements ProductUseCase {
 			existProduct.setAllowCustomerType(product.getAllowCustomerType());
 			existProduct.setAllowSpecificCurrency(product.isAllowSpecificCurrency());
 			existProduct.setAllowSpecificCustomerType(product.isAllowSpecificCustomerType());
-			
-			this.productRepository.save(existProduct);
+			existProduct.updateRecord();
+			cache.putIfAbsent(existProduct.getType(), existProduct);
 		}
-		
 	}
 
 	@Override
-//	@Cacheable(value = "products", key = "#type")
 	public Product getByType(String type) {
-		return this.productRepository.getByType(type);
+		Cache cache = this.cacheManager.getCache(cacheName);
+		Product product = cache.get(type, Product.class);
+		
+		if (product == null) {
+			return null;
+		}
+		
+		return product;
 	}
 
 }

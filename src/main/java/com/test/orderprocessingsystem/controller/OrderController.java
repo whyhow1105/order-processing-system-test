@@ -1,7 +1,5 @@
 package com.test.orderprocessingsystem.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.test.orderprocessingsystem.entity.Order;
+import com.test.orderprocessingsystem.model.Order;
 import com.test.orderprocessingsystem.usecase.OrderUseCase;
 
 @RestController
@@ -26,15 +24,12 @@ public class OrderController {
 	}
 	
 	@PostMapping
-//	public ResponseEntity<String> addOrder(@RequestBody Order order) {
-//		return ResponseEntity.ok(this.orderUseCase.addOrder(order));
-//	}
-	public String addOrder(@RequestBody Order order) {
-		return this.orderUseCase.addOrder(order);
+	public ResponseEntity<String> addOrder(@RequestBody Order order) {
+		return ResponseEntity.ok(this.orderUseCase.addOrder(order));
 	}
 	
 	@GetMapping("/{query}")
-	public ResponseEntity<List<Order>> queryOrder(@PathVariable String query) {
+	public ResponseEntity<Order> queryOrder(@PathVariable String query) {
 		return ResponseEntity.ok(this.orderUseCase.queryOrder(query));
 	}
 	

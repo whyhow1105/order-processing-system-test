@@ -1,43 +1,42 @@
 package com.test.orderprocessingsystem.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
-import com.test.orderprocessingsystem.entity.Order;
-import com.test.orderprocessingsystem.entity.Product;
 import com.test.orderprocessingsystem.exception.OrderNotFoundException;
 import com.test.orderprocessingsystem.exception.ProductAllowCustomerTypeException;
 import com.test.orderprocessingsystem.exception.ProductAllowSpecificCurrencyException;
 import com.test.orderprocessingsystem.exception.ProductDisallowSpecificCurrencyException;
 import com.test.orderprocessingsystem.exception.ProductNotFoundException;
-import com.test.orderprocessingsystem.repository.OrderRepository;
+import com.test.orderprocessingsystem.model.Order;
+import com.test.orderprocessingsystem.model.Product;
 import com.test.orderprocessingsystem.usecase.OrderUseCase;
 import com.test.orderprocessingsystem.usecase.ProductUseCase;
 
 @Service
 public class OrderService implements OrderUseCase {
 	
-	private final OrderRepository orderRepository;
-	
+	private final CacheManager cacheManager;
+
 	private final ProductUseCase productUseCase;
 	
-	public OrderService(OrderRepository orderRepository,
+	private final String cacheName = "orders";
+	
+	public OrderService(CacheManager cacheManager,
 			ProductUseCase productUseCase) {
-		this.orderRepository = orderRepository;
+		this.cacheManager = cacheManager;
 		this.productUseCase = productUseCase;
 	}
 
 	@Override
-	@CachePut(value = "orders", key = "#order.customerName")
 	public String addOrder(Order order) {
+		Cache cache = this.cacheManager.getCache(cacheName);
 		try {
 			this.validateBusinessRequirement(order);
-			order = this.orderRepository.save(order);
+			order.saveRecord();
+			cache.put(order.getId(), order);
+			cache.put(order.getCustomerName(), order);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -45,22 +44,40 @@ public class OrderService implements OrderUseCase {
 	}
 
 	@Override
-	@Cacheable(value = "orders", key = "#query")
-	public List<Order> queryOrder(String query) {
-		List<Order> orderList = this.orderRepository.getByIdOrCustomerName(query, query);
-		if (orderList.isEmpty()) {
-			return null;
+	public Order queryOrder(String query) {
+		Cache cache = this.cacheManager.getCache(cacheName);
+		Order order = new Order();
+		Order orderById = cache.get(query, Order.class);
+		Order orderByCustomerName = cache.get(query, Order.class);
+
+		if (orderById != null) {
+			order = orderById;
+		} else if (orderByCustomerName != null) {
+			order = orderByCustomerName;
+		} else {
+			order = null;
 		}
-		return orderList;
+		return order;
 	}
 
 	@Override
-	@CachePut(value = "orders", key = "#order.id")
 	public Order updateOrder(Order order) {
+		Cache cache = this.cacheManager.getCache(cacheName);
 		try {
-			this.validateOrderById(order.getId());
-			this.validateBusinessRequirement(order);
-			order = this.orderRepository.save(order);
+			Order existingOrder = this.validateOrderById(order.getId(), cache);
+			if (!existingOrder.getCustomerName().equals(order.getCustomerName())) {
+				cache.evict(existingOrder.getCustomerName());
+			}
+			existingOrder.setCustomerName(order.getCustomerName());
+			existingOrder.setCustomerType(order.getCustomerType());
+			existingOrder.setProduct(order.getProduct());
+			existingOrder.setAmount(order.getAmount());
+			existingOrder.setCurrency(order.getCurrency());
+			this.validateBusinessRequirement(existingOrder);
+			existingOrder.updateRecord();
+			cache.putIfAbsent(existingOrder.getId(), existingOrder);
+			cache.putIfAbsent(existingOrder.getCustomerName(), existingOrder);
+			return existingOrder;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -68,11 +85,12 @@ public class OrderService implements OrderUseCase {
 	}
 
 	@Override
-	@CacheEvict(value = "orders", key = "#id")
 	public void deleteOrder(String id) {
+		Cache cache = this.cacheManager.getCache(cacheName);
 		try {
-			this.validateOrderById(id);
-			this.orderRepository.deleteById(id);
+			Order order = this.validateOrderById(id, cache);
+			cache.evict(id);
+			cache.evict(order.getCustomerName());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -114,12 +132,13 @@ public class OrderService implements OrderUseCase {
 		}
 	}
 	
-	private void validateOrderById(String id) throws OrderNotFoundException {
-		Optional<Order> order = this.orderRepository.findById(id);
+	private Order validateOrderById(String id, Cache cache) throws OrderNotFoundException {
+		Order order = cache.get(id, Order.class);
 		
-		if (!order.isPresent()) {
+		if (order == null) {
 			throw new OrderNotFoundException(id);
-		} 
+		}
+		return order;
 	}
 
 }

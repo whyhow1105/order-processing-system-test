@@ -1,14 +1,10 @@
-package com.test.orderprocessingsystem.entity;
+package com.test.orderprocessingsystem.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import com.test.orderprocessingsystem.constant.Status;
 
-@Entity(name="orders")
 public class Order extends Maintenance implements Serializable {
 	
 	/**
@@ -16,27 +12,20 @@ public class Order extends Maintenance implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="customer_name", nullable=false, length=255)
 	private String customerName;
 	
-	@Column(name="customer_type", nullable=false, length=10)
 	private String customerType;
 	
-	@OneToOne
-	@JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
 	private Product product;
 	
-	@Column(name="amount", nullable=false, precision=14, scale=5)
 	private BigDecimal amount;
 	
-	@Column(name="currency", nullable=false, length=3)
 	private String currency;
 	
-	@Column(name="status", nullable=false, length=10)
 	private String status;
 
 	public Order() {
-		super();
+		super("ORDR");
 	}
 
 	public String getCustomerName() {
@@ -85,5 +74,11 @@ public class Order extends Maintenance implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	@Override
+	public void saveRecord() {
+		super.saveRecord();
+		this.setStatus(Status.PENDING.name());
 	}
 }

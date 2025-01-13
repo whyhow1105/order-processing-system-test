@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.test.orderprocessingsystem.constant.Currency;
 import com.test.orderprocessingsystem.constant.CustomerType;
-import com.test.orderprocessingsystem.entity.Product;
+import com.test.orderprocessingsystem.model.Product;
 import com.test.orderprocessingsystem.usecase.ProductUseCase;
 
 @Component
@@ -40,6 +40,23 @@ public class ApplicationRunner implements CommandLineRunner {
 		product2.setDisallowCurrency(Currency.USD.name());
 		
 		productUseCase.addProduct(product2);
+		
+		Product product3 = new Product();
+		product3.setType("XYZ");
+		product3.setAllowSpecificCurrency(false);
+		product3.setAllowSpecificCustomerType(false);
+		product3.setDisallowSpecificCurrency(true);
+		product3.setDisallowCurrency(Currency.JPY.name());
+		
+		productUseCase.addProduct(product3);
+		
+		Product product4 = new Product();
+		product4.setType("AAA");
+		product4.setAllowSpecificCurrency(false);
+		product4.setAllowSpecificCustomerType(false);
+		product4.setDisallowSpecificCurrency(false);
+		
+		productUseCase.addProduct(product4);
 		
 	}
 

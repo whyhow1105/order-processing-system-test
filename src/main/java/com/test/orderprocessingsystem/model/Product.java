@@ -1,11 +1,7 @@
-package com.test.orderprocessingsystem.entity;
+package com.test.orderprocessingsystem.model;
 
 import java.io.Serializable;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-
-@Entity(name="product")
 public class Product extends Maintenance implements Serializable {
 	
 	/**
@@ -13,29 +9,22 @@ public class Product extends Maintenance implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="type", unique=true, nullable=false, length=255)
 	private String type;
 	
-	@Column(name="allow_specific_currency")
 	private boolean allowSpecificCurrency;
 	
-	@Column(name="allow_currency", length=3)
 	private String allowCurrency;
 	
-	@Column(name="disallow_specific_currency")
 	private boolean disallowSpecificCurrency;
 	
-	@Column(name="disallow_currency", length=3)
 	private String disallowCurrency;
 	
-	@Column(name="allow_specific_customer_type")
 	private boolean allowSpecificCustomerType;
 	
-	@Column(name="allow_customer_type", length=10)
 	private String allowCustomerType;
 
 	public Product() {
-		super();
+		super("PROD");
 	}
 
 	public String getType() {

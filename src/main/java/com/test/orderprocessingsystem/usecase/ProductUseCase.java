@@ -1,6 +1,6 @@
 package com.test.orderprocessingsystem.usecase;
 
-import com.test.orderprocessingsystem.entity.Product;
+import com.test.orderprocessingsystem.model.Product;
 
 public interface ProductUseCase {
 	

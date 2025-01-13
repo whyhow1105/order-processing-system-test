@@ -38,7 +38,7 @@ public class OrderService implements OrderUseCase {
 			cache.put(order.getId(), order);
 			cache.put(order.getCustomerName(), order);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw ex;
 		}
 		return order.getId();
 	}
@@ -79,9 +79,8 @@ public class OrderService implements OrderUseCase {
 			cache.putIfAbsent(existingOrder.getCustomerName(), existingOrder);
 			return existingOrder;
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw ex;
 		}
-		return order;
 	}
 
 	@Override
@@ -92,7 +91,7 @@ public class OrderService implements OrderUseCase {
 			cache.evict(id);
 			cache.evict(order.getCustomerName());
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw ex;
 		}
 	}
 	

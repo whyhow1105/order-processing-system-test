@@ -31,7 +31,7 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
-	
+		<!-- Manually add -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
@@ -41,6 +41,7 @@
 	        <artifactId>caffeine</artifactId>
 	    </dependency>
 	    
+	    <!-- Default add -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -51,6 +52,7 @@
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

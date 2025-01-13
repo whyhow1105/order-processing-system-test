@@ -10,55 +10,50 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler({Exception.class})
 	public ResponseEntity<Object> handleException(Exception exception) {
-		System.out.println("Exception");
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(exception.getMessage());
 	}
 	
 	@ExceptionHandler({RuntimeException.class})
-	public ResponseEntity<Object> handleRuntimeException(RuntimeException runtimeException) {
-		System.out.println("RuntimeException");
+	public ResponseEntity<Object> handleRuntimeException(RuntimeException exception) {
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(runtimeException.getMessage());
+				.body(exception.getMessage());
 	}
 	
 	@ExceptionHandler({OrderNotFoundException.class})
-	public ResponseEntity<Object> handleOrderNotFoundException(OrderNotFoundException orderNotFoundException) {
-		System.out.println("OrderNotFoundException");
+	public ResponseEntity<Object> handleOrderNotFoundException(OrderNotFoundException exception) {
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(orderNotFoundException.getMessage());
+				.body(exception.getMessage());
 	}
 	
 	@ExceptionHandler({ProductAllowCustomerTypeException.class})
-	public ResponseEntity<Object> handleProductAllowCustomerTypeException(ProductAllowCustomerTypeException productAllowCustomerTypeException) {
-		System.out.println("ProductAllowCustomerTypeException");
+	public ResponseEntity<Object> handleProductAllowCustomerTypeException(ProductAllowCustomerTypeException exception) {
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(productAllowCustomerTypeException.getMessage());
+				.body(exception.getMessage());
 	}
 	
 	@ExceptionHandler({ProductAllowSpecificCurrencyException.class})
-	public ResponseEntity<Object> handleProductAllowSpecificCurrencyException(ProductAllowSpecificCurrencyException productAllowSpecificCurrencyException) {
-		System.out.println("ProductAllowSpecificCurrencyException");
+	public ResponseEntity<Object> handleProductAllowSpecificCurrencyException(ProductAllowSpecificCurrencyException exception) {
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(productAllowSpecificCurrencyException.getMessage());
+				.body(exception.getMessage());
 	}
 	
 	@ExceptionHandler({ProductDisallowSpecificCurrencyException.class})
-	public ResponseEntity<Object> handleProductDisallowSpecificCurrencyException(ProductDisallowSpecificCurrencyException productDisallowSpecificCurrencyException) {
-		System.out.println("ProductDisallowSpecificCurrencyException");
+	public ResponseEntity<Object> handleProductDisallowSpecificCurrencyException(ProductDisallowSpecificCurrencyException exception) {
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(productDisallowSpecificCurrencyException.getMessage());
+				.body(exception.getMessage());
 	}
 	
 	@ExceptionHandler(ProductNotFoundException.class)
-	public ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException ex) {
-		System.out.println("ProductNotFoundException");
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+	public ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException exception) {
+		return ResponseEntity
+				.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(exception.getMessage());
 	}
 }

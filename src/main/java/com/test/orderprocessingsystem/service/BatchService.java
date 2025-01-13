@@ -39,8 +39,6 @@ public class BatchService implements Runnable {
 					}
 				, 0, 1, TimeUnit.SECONDS);
 		
-		executor.scheduleAtFixedRate(() -> System.out.println(anySpecificRecords), 0, 1, TimeUnit.SECONDS);
-		
 		if (anySpecificRecords) {
 			executor.schedule(() -> this.updateOthersCustomerTypeStatus(), 0, TimeUnit.DAYS);
 		}

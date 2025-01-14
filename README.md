@@ -141,7 +141,7 @@ Find out the @SpingBootApplication class and run as Java Application
 	- Application start will launch the batch
 
 ## JUnit Test
-There is few junit test under folder src/test/java with package com.test.orderprocessingsystem.service
+There is few junit test under folder src/test/java with package com.test.orderprocessingsystem.service. Test runner as JUnit 4.
 - BatchServiceTest
 	- to test the status changes
 - OrderServiceTest

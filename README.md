@@ -14,9 +14,11 @@ This is my technical test assessment - simple Order Processing System
 - Java 17 (openjdk17)
 - Maven project (maven version 3.8.8)
 - IDE (Eclipse or others)
+- JUnit
 
 ## Pre-Setup
 Import the project as the maven project, make sure maven update the project to install dependencies.
+In Java Build Path add the library for JUnit
 
 ## Project Structure Design
 There is different package to keep the usage as below:
